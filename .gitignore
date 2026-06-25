@@ -1,0 +1,11 @@
+# Data and outputs
+data/
+artifacts/
+results/
+# Python
+__pycache__/
+*.pyc
+.env
+.venv
+# Jupyter
+.ipynb_checkpoints/

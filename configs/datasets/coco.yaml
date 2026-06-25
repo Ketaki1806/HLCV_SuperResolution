@@ -1,0 +1,4 @@
+name: coco
+root: data/raw/coco
+split: val2017
+patch_size: 64

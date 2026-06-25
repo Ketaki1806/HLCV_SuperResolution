@@ -1,0 +1,5 @@
+name: fsrcnn
+scale: 4
+d: 56
+s: 12
+m: 4

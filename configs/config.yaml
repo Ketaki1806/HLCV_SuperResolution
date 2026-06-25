@@ -1,0 +1,3 @@
+project_name: super_resolution_benchmark
+seed: 42
+scale_factors: [2, 4]
