@@ -1,0 +1,20 @@
+# Conda environment for super-resolution benchmark on conduit HPC.
+# Create with: conda env create -f environment.yml
+# Activate with: conda activate super_resolution
+
+name: super_resolution
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch>=2.0
+  - torchvision>=0.15
+  - pytorch-cuda=12.1
+  - pillow>=10.0
+  - pip
+  - pip:
+      - pyyaml>=6.0
+      - tqdm>=4.65
+      - pytest>=7.0
