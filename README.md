@@ -11,10 +11,12 @@ Reproducible benchmark comparing ESPCN, FSRCNN, and AnyUp on COCO for downstream
 - COCO (source images)
 
 ## Structure
-- configs/  — per-model and dataset YAML configs
-- src/      — all pipeline code
+- configs/  ï¿½ per-model and dataset YAML configs
+- src/      ï¿½ all pipeline code
 - 
-otebooks/ — EDA and results analysis
-- scripts/  — entrypoints for train/eval/benchmark
-- rtifacts/ — saved model weights, metrics
-- 	ests/    — unit tests
+## Notebooks/ ï¿½ EDA and results analysis
+- scripts/  ï¿½ entrypoints for train/eval/benchmark
+- Artifacts/ ï¿½ saved model weights, metrics
+- Tests/    ï¿½ unit tests
+
+

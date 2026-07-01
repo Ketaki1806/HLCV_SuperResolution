@@ -3,3 +3,6 @@ torchvision>=0.15
 Pillow>=10.0
 PyYAML>=6.0
 tqdm>=4.65
+opencv-python==4.13.0.92
+numpy==2.4.6
+matplotlib==3.11.0
