@@ -1,0 +1,5 @@
+name: yolov8n
+weights: yolov8n.pt
+backbone_end: 9
+decoder_start: 10
+upsample_layers: [10, 13]
