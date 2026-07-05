@@ -51,6 +51,32 @@ python scripts\preprocessing\downsample.py \
 
 ---
 
+### [05-July-2026] — Models evaluation and Figures plot
+
+**What was done**
+- Models evaluation and Figures plot
+
+**Config used**
+
+**Result**
+
+**Decisions made**
+- For evaluation of the model, the output of the model should be converted to the following format:
+  ```
+  [
+    {
+        "image_id": int,
+        "category_id": int,
+        "bbox": [x, y, width, height],
+        "score": float
+    }
+  ]
+  ```
+- Figures:
+  1. For each model, compare all mAP for different methods. (4)
+  2. For small-sized objects, compare different models for each method. (1)
+---
+
 ### [Date] — <next change title>
 
 **What was done**
