@@ -75,6 +75,14 @@ python scripts\preprocessing\downsample.py \
 - Figures:
   1. For each model, compare all mAP for different methods. (4)
   2. For small-sized objects, compare different models for each method. (1)
+
+- Store the weights in the runs/weights
+- Store the models' evaluation results in the corresponding runs/model_strat/predictions.json. Here, model_strat is such a combination:
+  ```
+  detectors = ["yolov8n", "faster_rcnn", "detr_zero_shot", "detr_finetuned"]
+  strategies = ["baseline", "espcn2x", "fsrcnn2x", "anyup"]
+  ```
+  I have created the example yolov8n_baseline
 ---
 
 ### [Date] — <next change title>
