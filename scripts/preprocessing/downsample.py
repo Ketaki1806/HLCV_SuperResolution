@@ -112,7 +112,7 @@ def process_dataset(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Shared downsampling script for SR project")
-    parser.add_argument("--input",        default="data/original",  help="Folder of original images")
+    parser.add_argument("--input",        default="data/coco",  help="Folder of original images")
     parser.add_argument("--output",       default="data/low_res",   help="Where to save low-res images")
     parser.add_argument("--scale",        type=int,   default=2,    help="Downsample factor (2 = half size)")
     parser.add_argument("--blur",         action="store_true",       help="Apply Gaussian blur before downsampling")

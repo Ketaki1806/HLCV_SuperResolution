@@ -1,3 +1,4 @@
 name: espcn
-scale: 4
+scale: 2
 num_channels: 1
+checkpoint_dir: artifacts/checkpoints

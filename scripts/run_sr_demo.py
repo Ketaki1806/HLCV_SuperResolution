@@ -1,10 +1,12 @@
 """Run FSRCNN 2x on sample_lr/ images and save HR outputs."""
-
 from __future__ import annotations
 
 import argparse
 import sys
 from pathlib import Path
+import torch
+from src.models.espcn import load_espcn, upscale_image as espcn_upscale
+
 
 from PIL import Image
 
@@ -84,6 +86,48 @@ def run_sr_demo(
 
     return processed
 
+    # --- ESPCN ---
+def espcn_demo(
+    input_dir: Path,
+    output_dir: Path,
+    max_images: int = 10,
+    device: str | None = None,
+) -> int:
+    if not input_dir.is_dir():
+        raise FileNotFoundError(
+            f"Input directory not found: {input_dir}. "
+            f"Run: python scripts/create_sample_lr.py --input sample --output sample_lr"
+        )
+
+    images = collect_images(input_dir, max_images)
+    if not images:
+        raise FileNotFoundError(f"No images found in {input_dir}")
+
+    config_path = PROJECT_ROOT / "configs" / "models" / "espcn.yaml"
+    config = load_yaml(config_path) if config_path.is_file() else {}
+    scale = int(config.get("scale", 2))
+
+    if device is None:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    print(f"Loading ESPCN x{scale} on {device}")
+    espcn_model = load_espcn(scale=scale, device=device)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    processed = 0
+
+    for image_path in images:
+        stem = image_path.stem
+        lr_image = Image.open(image_path).convert("RGB")
+        sr_image = espcn_upscale(espcn_model, lr_image)
+
+        save_image(lr_image, output_dir / f"{stem}_lr.png")
+        save_image(sr_image, output_dir / f"{stem}_espcn_x{scale}.png")
+        save_comparison(lr_image, sr_image, output_dir / f"{stem}_espcn_compare.png")
+        print(f"ESPCN processed {image_path.name} -> {lr_image.size} -> {sr_image.size}")
+        processed += 1
+
+    return processed    
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run FSRCNN on sample_lr images")
@@ -101,6 +145,12 @@ def main() -> None:
     )
     print(f"Done. Processed {count} image(s). Outputs in {args.output}")
 
-
+    count_espcn = espcn_demo(
+        input_dir=args.input,
+        output_dir=args.output,
+        max_images=args.max_images,
+        device=args.device,
+    )
+    print(f"Done. Processed {count_espcn} image(s) with ESPCN. Outputs in {args.output}")
 if __name__ == "__main__":
     main()

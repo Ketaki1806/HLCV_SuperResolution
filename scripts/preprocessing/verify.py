@@ -5,7 +5,7 @@ from pathlib import Path
 import random
 import numpy as np
 
-orig_dir = Path("data/original")
+orig_dir = Path("data/coco")
 lr_dir   = Path("data/preprocessed/low_res/scale_x2")
 
 print("Looking in:", lr_dir)

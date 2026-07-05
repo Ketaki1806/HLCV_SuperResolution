@@ -39,15 +39,22 @@ python scripts\preprocessing\downsample.py \
   --blur-sigma 2
 ```
 
+**Commad to run and verify downsampling**
+    python scripts\preprocessing\downsample.py --input data\original --output data\preprocessed\low_res\scale_x2 --scale 2 --blur --blur-sigma 1.0  
+
+    python scripts\preprocessing\verify.py
+
+
+
 **Result**
-- 100 images processed, 0 skipped
+- 100 images (for testing) processed, 0 skipped
 - Output: data\preprocessed\low_res\scale_x2\
 - Verified visually via verification.png — dimensions halved as expected
 
 **Decisions made**
 - Chose blur + bicubic downsample only (no noise, no JPEG compression)
 - Reason: standard degradation pipeline matching SR model training conditions
-- Scale ×2 to match pretrained SR model weights (FSRCNN_x2, ESPCN_x2)
+- Scale ×2 to match pretrained SR model weights (FSRCNN_x2, ESPCN_x2, YOLOv8n)
 
 ---
 
@@ -85,14 +92,23 @@ python scripts\preprocessing\downsample.py \
   I have created the example yolov8n_baseline
 ---
 
-### [Date] — <next change title>
+### [04-07-2026] — Added ESPCN Super-Resolution Model
 
-**What was done**
-
-**Config used**
+**Changes**
+- Added ESPCN model for image super-resolution.
+- Created `src/models/espcn.py` with a simple interface (`load_espcn()` and `upscale_image()`).
+- Connected ESPCN to the existing `run_sr_demo.py` pipeline.
+- Added automatic download of pretrained ESPCN models (.pb files).
+- Supported ×2, ×3, and ×4 upscaling.
 
 **Result**
+- ESPCN now works end-to-end in the project pipeline.
+- It takes low-resolution images and generates high-resolution outputs successfully.
+- All outputs are saved and can be used for further evaluation.
 
 **Decisions made**
+- Used OpenCV version of ESPCN because pretrained models are easily available.
+- Kept the same input/output format so it works with the rest of the project without changes.
+- Added automatic download so users do not need to manually download model files.
 
 ---
