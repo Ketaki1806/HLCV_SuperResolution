@@ -112,3 +112,8 @@ python scripts\preprocessing\downsample.py \
 - Added automatic download so users do not need to manually download model files.
 
 ---
+### [04-07-2026] — DETR model
+
+- Add DETR models with optional AnyUp.
+- To be done: 1. evaluation script (zero-shot) 2. training script (fine-tuned)
+---
