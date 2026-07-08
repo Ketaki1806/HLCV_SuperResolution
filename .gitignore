@@ -1,5 +1,7 @@
 # Data and outputs
-data/
+data/coco
+data/preprocessed
+data/annotations
 artifacts/
 results/
 # Python

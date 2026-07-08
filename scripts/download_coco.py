@@ -13,6 +13,7 @@ from tqdm import tqdm
 COCO_IMAGE_URLS = {
     "train2017": "https://images.cocodataset.org/zips/train2017.zip",
     "val2017": "https://images.cocodataset.org/zips/val2017.zip",
+    "trainval2017": "http://images.cocodataset.org/annotations/annotations_trainval2017.zip"
 }
 
 
@@ -50,6 +51,28 @@ def download_split(split: str, root: Path) -> Path:
     print(f"COCO {split} ready at {split_dir}")
     return split_dir
 
+#Added by nehali to download annotations | Intended for the HPC cluster, not local machines.
+def download_annotations(root: Path) -> Path:
+    ann_dir = root / "annotations"
+
+    # Check if already downloaded
+    if ann_dir.is_dir() and all((ann_dir / f).is_file() for f in ANNOTATION_FILES):
+        print(f"Annotations already present at {ann_dir}")
+        return ann_dir
+
+    url      = COCO_ANNOTATION_URLS["trainval2017"]
+    zip_path = root / "annotations.zip"
+
+    print(f"Downloading annotations from {url}")
+    urlretrieve(url, zip_path, reporthook=_DownloadProgress())
+
+    print(f"Extracting {zip_path}")
+    with zipfile.ZipFile(zip_path, "r") as archive:
+        archive.extractall(root)
+
+    zip_path.unlink(missing_ok=True)
+    print(f"Annotations ready at {ann_dir}")
+    return ann_dir
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download COCO image splits")
@@ -59,6 +82,12 @@ def main() -> None:
         default="val2017",
         help="COCO split to download (default: val2017)",
     )
+    parser.add_argument(
+        "--annotations",
+        action="store_true",
+        help="Also download annotation JSON files (needed for mAP evaluation)",
+    )
+
     default_root = Path(os.environ.get("COCO_ROOT", Path.home() / "data" / "coco"))
     parser.add_argument(
         "--root",
@@ -69,6 +98,8 @@ def main() -> None:
     args = parser.parse_args()
     download_split(args.split, args.root)
 
+    if args.annotations:
+        download_annotations(args.root)
 
 if __name__ == "__main__":
     main()
