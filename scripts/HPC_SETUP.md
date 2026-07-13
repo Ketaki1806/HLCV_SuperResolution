@@ -1,6 +1,24 @@
 # HPC setup guide (conduit)
 
-Run these steps **in order**. Commands marked **LOCAL** run on your Windows machine.
+**Recommended:** use the all-in-one cluster script after copying the project:
+
+```bash
+ssh hlcv_team019@conduit.hpc.uni-saarland.de
+cd ~/super_resolution
+bash scripts/hpc_setup_cluster.sh
+```
+
+This installs the conda env, pip dependencies, and sets `~/.bashrc` paths. **COCO is assumed to already exist** on the cluster.
+
+Options:
+
+```bash
+bash scripts/hpc_setup_cluster.sh --skip-env          # only set paths
+```
+
+---
+
+Run these steps **in order** if you prefer manual setup. Commands marked **LOCAL** run on your Windows machine.
 Commands marked **CLUSTER** run after `ssh hlcv_team019@conduit.hpc.uni-saarland.de`.
 
 Replace paths if your project lives somewhere else locally.
@@ -75,7 +93,8 @@ cd ~/super_resolution
 
 # Persist env vars for future sessions
 cat >> ~/.bashrc << 'EOF'
-export COCO_ROOT=$HOME/data/coco
+export DATA_ROOT=/scratch/teaching/hlcv/hlcv_team019
+export COCO_ROOT=$DATA_ROOT/coco
 export PROJECT_ROOT=$HOME/super_resolution
 EOF
 source ~/.bashrc
@@ -86,27 +105,14 @@ export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 
 ---
 
-## Step 5 — Download COCO on the cluster (CLUSTER)
+## Step 5 — Verify COCO exists on the cluster (CLUSTER)
 
-Do **not** download on your laptop. On the cluster:
+COCO is provided centrally for the course under `/scratch/teaching/hlcv/hlcv_team019` (team-specific path).
 
 ```bash
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate super_resolution
-cd ~/super_resolution
-export PYTHONPATH=$PWD:$PYTHONPATH
-
-# val2017 only (~1 GB) — recommended to start
-bash scripts/setup_coco_hpc.sh
-
-# OR train2017 (~18 GB) when you need the full training split:
-# bash scripts/setup_coco_hpc.sh train2017
-```
-
-Expected layout after download:
-
-```
-~/data/coco/val2017/*.jpg
+ls -lah $COCO_ROOT
+ls $COCO_ROOT/val2017 | wc -l
+ls -lah $COCO_ROOT/annotations | head
 ```
 
 ---

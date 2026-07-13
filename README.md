@@ -1,6 +1,6 @@
 # Super Resolution Benchmark
 
-Reproducible benchmark comparing ESPCN, FSRCNN, and AnyUp on COCO for downstream traffic sign detection (GTSDB, TT100K).
+Reproducible benchmark comparing ESPCN, FSRCNN, and AnyUp as preprocessing for general object detection on COCO.
 
 ## Models
 - ESPCN

@@ -1,5 +1,5 @@
 name: coco
-# On HPC: export COCO_ROOT=$HOME/data/coco (see scripts/setup_coco_hpc.sh)
+# On HPC: export COCO_ROOT=/scratch/teaching/hlcv/hlcv_team019/coco
 root: data/raw/coco
 split: val2017
 patch_size: 64

@@ -1,5 +1,5 @@
 # Conda environment for super-resolution benchmark on conduit HPC.
-# Create with: conda env create -f environment.yml
+# Create with: bash scripts/hpc_setup_cluster.sh
 # Activate with: conda activate super_resolution
 
 name: super_resolution
@@ -20,6 +20,13 @@ dependencies:
       - pytest>=7.0
       - timm>=0.9.0
       - ultralytics>=8.0.0
+      - opencv-python>=4.8.0
+      - numpy>=1.24.0
+      - matplotlib>=3.7.0
+      - pycocotools>=2.0.6
+      - transformers>=4.36.0
+      - accelerate>=0.25.0
+      - huggingface_hub>=0.20.0
       - transformers>=4.35.0
       - pycocotools>=2.0.7
       - matplotlib>=3.7.0
