@@ -10,7 +10,7 @@ def test_coco_dataset_loads_sample(project_root: Path) -> None:
     config = load_yaml(project_root / "configs" / "datasets" / "coco.yaml")
     coco_root = project_root / config["root"] / config["split"]
     if not coco_root.is_dir() and not (Path.home() / "data" / "coco" / config["split"]).is_dir():
-        pytest.skip("COCO not available (download on HPC with scripts/setup_coco_hpc.sh)")
+        pytest.skip("COCO not available (set COCO_ROOT to the cluster dataset path)")
 
     dataset = load_coco_dataset(project_root / "configs" / "datasets" / "coco.yaml")
 

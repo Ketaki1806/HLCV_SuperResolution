@@ -14,6 +14,9 @@ universe                = docker
 docker_image            = nvidia/cuda:11.4.3-runtime-ubuntu20.04
 executable              = execute.sh
 
+# Use the same pattern as gpu_instructions/execute.sh: call python by absolute path.
+environment             = CONDA_PYTHON_BINARY_PATH=/home/hlcv_team019/miniconda3/envs/hlcv/bin/python
+
 # Uses COCO_ROOT from execute.sh (defaults to /scratch/teaching/hlcv/hlcv_team019/coco)
 arguments               = scripts/preprocessing/downsample_coco_val2017.py --coco-root /scratch/teaching/hlcv/hlcv_team019/coco --output-dir /scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2 --scale 2 --blur --blur-kernel 5 --blur-sigma 2 --metrics
 
