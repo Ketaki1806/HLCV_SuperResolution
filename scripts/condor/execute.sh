@@ -6,11 +6,22 @@ set -euo pipefail
 PROJECT_ROOT="${PROJECT_ROOT:-$HOME/super_resolution}"
 DATA_ROOT="${DATA_ROOT:-/scratch/teaching/hlcv/hlcv_team019}"
 COCO_ROOT="${COCO_ROOT:-$DATA_ROOT/coco}"
-CONDA_PYTHON_BINARY_PATH="${CONDA_PYTHON_BINARY_PATH:-$HOME/miniconda3/envs/super_resolution/bin/python}"
+CONDA_ENV_NAME="${CONDA_ENV_NAME:-super_resolution}"
+CONDA_SH="${CONDA_SH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
 
 cd "$PROJECT_ROOT"
 export PYTHONPATH="$PROJECT_ROOT:${PYTHONPATH:-}"
 export DATA_ROOT
 export COCO_ROOT
 
-"$CONDA_PYTHON_BINARY_PATH" "$@"
+if [[ ! -f "$CONDA_SH" ]]; then
+  echo "ERROR: conda.sh not found at: $CONDA_SH"
+  echo "Set CONDA_SH to your conda.sh path or install Miniconda under \$HOME/miniconda3."
+  exit 1
+fi
+
+# shellcheck source=/dev/null
+source "$CONDA_SH"
+conda activate "$CONDA_ENV_NAME"
+
+python "$@"
