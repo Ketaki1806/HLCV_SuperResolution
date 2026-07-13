@@ -1,25 +1,30 @@
 from __future__ import annotations
 
 from pathlib import Path
-from urllib.request import urlretrieve
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import cv2
 import numpy as np
 from PIL import Image
 
-# -----------------------------
-# Download URLs
-# -----------------------------
-BASE_URL = (
-    "https://huggingface.co/spaces/"
-    "PabloGabrielSch/AI_Resolution_Upscaler_And_Resizer/"
-    "resolve/7888e9bba89c44423e0d9919602abb75d5b3ce2b/models"
-)
-
-ESPCN_MODEL_URLS = {
-    2: f"{BASE_URL}/ESPCN_x2.pb",
-    3: f"{BASE_URL}/ESPCN_x3.pb",
-    4: f"{BASE_URL}/ESPCN_x4.pb",
+# Primary + fallback sources (HuggingFace can return 500 intermittently).
+ESPCN_MODEL_URLS: dict[int, list[str]] = {
+    2: [
+        "https://raw.githubusercontent.com/fannymonori/TF-ESPCN/master/export/ESPCN_x2.pb",
+        "https://github.com/fannymonori/TF-ESPCN/raw/master/export/ESPCN_x2.pb",
+        "https://huggingface.co/spaces/PabloGabrielSch/AI_Resolution_Upscaler_And_Resizer/resolve/main/models/ESPCN_x2.pb",
+    ],
+    3: [
+        "https://raw.githubusercontent.com/fannymonori/TF-ESPCN/master/export/ESPCN_x3.pb",
+        "https://github.com/fannymonori/TF-ESPCN/raw/master/export/ESPCN_x3.pb",
+        "https://huggingface.co/spaces/PabloGabrielSch/AI_Resolution_Upscaler_And_Resizer/resolve/main/models/ESPCN_x3.pb",
+    ],
+    4: [
+        "https://raw.githubusercontent.com/fannymonori/TF-ESPCN/master/export/ESPCN_x4.pb",
+        "https://github.com/fannymonori/TF-ESPCN/raw/master/export/ESPCN_x4.pb",
+        "https://huggingface.co/spaces/PabloGabrielSch/AI_Resolution_Upscaler_And_Resizer/resolve/main/models/ESPCN_x4.pb",
+    ],
 }
 
 
@@ -39,15 +44,20 @@ def download_espcn_model(scale: int, checkpoint_dir: Path) -> Path:
         return model_path
 
     print(f"Downloading ESPCN x{scale} model...")
+    errors: list[str] = []
+    for url in ESPCN_MODEL_URLS[scale]:
+        try:
+            request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urlopen(request, timeout=60) as response:
+                model_path.write_bytes(response.read())
+            print(f"Download complete: {url}")
+            return model_path
+        except (HTTPError, URLError, TimeoutError) as exc:
+            errors.append(f"{url} -> {exc}")
 
-    urlretrieve(
-        ESPCN_MODEL_URLS[scale],
-        str(model_path),
+    raise RuntimeError(
+        f"Failed to download ESPCN x{scale} model. Tried:\n  " + "\n  ".join(errors)
     )
-
-    print("Download complete.")
-
-    return model_path
 
 
 def load_espcn(

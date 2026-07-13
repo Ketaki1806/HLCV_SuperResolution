@@ -145,12 +145,15 @@ def main() -> None:
     )
     print(f"Done. Processed {count} image(s). Outputs in {args.output}")
 
-    count_espcn = espcn_demo(
-        input_dir=args.input,
-        output_dir=args.output,
-        max_images=args.max_images,
-        device=args.device,
-    )
-    print(f"Done. Processed {count_espcn} image(s) with ESPCN. Outputs in {args.output}")
+    try:
+        count_espcn = espcn_demo(
+            input_dir=args.input,
+            output_dir=args.output,
+            max_images=args.max_images,
+            device=args.device,
+        )
+        print(f"Done. Processed {count_espcn} image(s) with ESPCN. Outputs in {args.output}")
+    except Exception as exc:
+        print(f"ESPCN skipped: {exc}")
 if __name__ == "__main__":
     main()

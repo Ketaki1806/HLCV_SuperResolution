@@ -1,9 +1,5 @@
-# src/eval/__init__.py
-from .coco_evaluator import GenericCOCOEvaluator
-from .plotter import plot_four_strategy_bars, plot_cross_strategy_model_bars
+# Import eval modules directly, e.g.:
+#   from src.eval.coco_evaluator import GenericCOCOEvaluator
+#   from src.eval.visualize import save_comparison, save_image
 
-__all__ = [
-    "GenericCOCOEvaluator",
-    "plot_four_strategy_bars",
-    "plot_cross_strategy_model_bars"
-]
+__all__: list[str] = []
