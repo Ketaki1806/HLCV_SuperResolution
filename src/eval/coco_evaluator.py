@@ -39,15 +39,15 @@ class GenericCOCOEvaluator:
 
         # 5. Extract specific diagnostic metrics at mAP@0.5 (IoU threshold index 1)
         # Precision matrix dimensions: [Tx, Rx, Kx, Ax, Mx]
-        # IoU threshold index [1] corresponds to IoU=0.50 (mAP@0.5)
+        # IoU threshold index [0] corresponds to IoU=0.50 (mAP@0.5)
         # Area index (Ax): 0=all, 1=small (<32^2 px), 2=medium, 3=large
         precision_matrix = coco_eval.eval['precision']
         
         extracted_metrics = {
-            "mAP_50_all":    float(precision_matrix[1, :, :, 0, :].mean()),
-            "mAP_50_small":  float(precision_matrix[1, :, :, 1, :].mean()),
-            "mAP_50_medium": float(precision_matrix[1, :, :, 2, :].mean()),
-            "mAP_50_large":  float(precision_matrix[1, :, :, 3, :].mean()),
+            "mAP_50_all":    float(precision_matrix[0, :, :, 0, :].mean()),
+            "mAP_50_small":  float(precision_matrix[0, :, :, 1, :].mean()),
+            "mAP_50_medium": float(precision_matrix[0, :, :, 2, :].mean()),
+            "mAP_50_large":  float(precision_matrix[0, :, :, 3, :].mean()),
         }
 
         # 6. Export results to a structured JSON file for future visualization
