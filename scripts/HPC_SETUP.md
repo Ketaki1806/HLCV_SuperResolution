@@ -74,6 +74,29 @@ python scripts/preprocessing/downsample_coco_val2017.py \
   --max-images 100 --metrics
 ```
 
+Results are saved to `<output-dir>/downsample_quality.json` (per-image PSNR/SSIM + mean).
+
+View summary on the cluster:
+
+```bash
+python -c "
+import json
+p='/scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2_100/downsample_quality.json'
+d=json.load(open(p))
+print('Mean:', d['metrics_mean'])
+print('Images:', d['count_metrics'])
+"
+```
+
+Re-evaluate without re-downsampling (HR vs bicubic-upsampled LR):
+
+```bash
+python scripts/eval_downsample_quality.py \
+  --hr-dir /scratch/teaching/hlcv/hlcv_team019/data/coco/images/val2017 \
+  --lr-dir /scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2_100 \
+  --output ~/super_resolution/results/downsample_quality.json
+```
+
 ---
 
 ## Option B — Full env (PyTorch + YOLO, 15–30+ min)

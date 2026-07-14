@@ -158,6 +158,12 @@ def main() -> None:
         metrics_out.parent.mkdir(parents=True, exist_ok=True)
         metrics_out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
         print(f"\nWrote metrics: {metrics_out}")
+        mean = summary["metrics_mean"]
+        if mean["psnr_db"] is not None:
+            print(
+                f"Mean ({summary['count_metrics']} images): "
+                f"PSNR={mean['psnr_db']:.2f} dB, SSIM={mean['ssim']:.4f}"
+            )
 
     print(f"\nDone. Wrote LR images to: {args.output_dir}")
 
