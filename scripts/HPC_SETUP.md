@@ -1,183 +1,163 @@
 # HPC setup guide (conduit)
 
-**Recommended:** use the all-in-one cluster script after copying the project:
+Follow **`gpu_instructions/GPU-instructions.md`** for Condor job submission. This doc covers conda, paths, and running project scripts.
+
+---
+
+## Cluster architecture (important)
+
+| What | Where | What you do |
+|------|--------|-------------|
+| **Login / submit node** | `conduit.hpc.uni-saarland.de` | SSH here, install conda, edit code, `condor_submit` |
+| **Execute nodes (GPU workers)** | Not directly accessible | Jobs run here after Condor schedules them |
+| **Team data** | `/scratch/teaching/hlcv/hlcv_team019/` | COCO, preprocessed images, large outputs |
+| **Your code** | `~/super_resolution` | Git clone of the project |
+
+There is **no separate “SSH submit node”** to log into. You SSH to **conduit** (the login node), and that **is** where you submit Condor jobs:
 
 ```bash
 ssh hlcv_team019@conduit.hpc.uni-saarland.de
-cd ~/super_resolution
-bash scripts/hpc_setup_cluster.sh
+cd ~/gpu_instructions   # or your project
+condor_submit pytorch_docker.sub
+condor_q
 ```
 
-This installs the conda env, pip dependencies, and sets `~/.bashrc` paths. **COCO is assumed to already exist** on the cluster.
-
-Options:
-
-```bash
-bash scripts/hpc_setup_cluster.sh --skip-env          # only set paths
-```
+You do **not** SSH to GPU machines. Condor copies your job to a worker and runs it there.
 
 ---
 
-Run these steps **in order** if you prefer manual setup. Commands marked **LOCAL** run on your Windows machine.
-Commands marked **CLUSTER** run after `ssh hlcv_team019@conduit.hpc.uni-saarland.de`.
+## Why conda / pip failed (what went wrong)
 
-Replace paths if your project lives somewhere else locally.
+1. **SSH dropped** during `conda env create` (“Verifying transaction”) → left a **broken** `~/miniconda3/envs/super_resolution/` folder (exists but no `bin/python`).
 
----
+2. **`conda create` failed** with “prefix already exists” → next commands ran without a working env.
 
-## Step 1 — Transfer `environment.yml` to the cluster (LOCAL)
+3. **`pip` hit system Python** → “externally-managed-environment” because `conda activate` did not succeed (you were not in the conda env).
 
-From PowerShell on your laptop (project root):
+4. **Condor jobs are the wrong place to install packages.** Install conda env on the **login node** first. Condor only **runs** your script using that env’s Python path (see `gpu_instructions/execute.sh`).
 
-```powershell
-cd "D:\Uni\SS2026\HLCV\Super resolution"
-scp environment.yml hlcv_team019@conduit.hpc.uni-saarland.de:~/
-```
-
----
-
-## Step 2 — Create the conda environment (CLUSTER)
-
-SSH in, then:
-
-```bash
-ssh hlcv_team019@conduit.hpc.uni-saarland.de
-
-# Load conda (miniconda3 is already installed on your account)
-source ~/miniconda3/etc/profile.d/conda.sh
-
-# Create env from the transferred file (~5–15 min)
-conda env create -f ~/environment.yml
-
-# Activate it
-conda activate super_resolution
-
-# Quick sanity check
-python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
-```
-
-If `pytorch-cuda=12.1` fails, edit `~/environment.yml` and try `pytorch-cuda=11.8`, then:
-
-```bash
-conda env create -f ~/environment.yml
-```
-
----
-
-## Step 3 — Transfer the full project to the cluster (LOCAL)
-
-Option A — **scp** (simple, no git remote needed):
-
-```powershell
-cd "D:\Uni\SS2026\HLCV\Super resolution"
-scp -r . hlcv_team019@conduit.hpc.uni-saarland.de:~/super_resolution
-```
-
-Option B — **git** (if the repo is pushed to GitHub/GitLab):
-
-```bash
-# on CLUSTER only
-cd ~
-git clone <YOUR_REPO_URL> super_resolution
-```
-
----
-
-## Step 4 — Set project paths on the cluster (CLUSTER)
+### Fix broken env (login node)
 
 ```bash
 source ~/miniconda3/etc/profile.d/conda.sh
+conda deactivate 2>/dev/null || true
+conda deactivate 2>/dev/null || true
+rm -rf ~/miniconda3/envs/super_resolution
+```
+
+---
+
+## Option A — Minimal env (downsampling only, ~2 min)
+
+Use this to run downsampling + PSNR/SSIM on COCO without PyTorch:
+
+```bash
+source ~/miniconda3/etc/profile.d/conda.sh
+conda create -n super_resolution python=3.10 pip -y
 conda activate super_resolution
+which python   # MUST be .../miniconda3/envs/super_resolution/bin/python
+pip install opencv-python-headless pycocotools tqdm numpy
+python -c "import cv2; from pycocotools.coco import COCO; print('ok')"
+```
 
+Run downsampling on the **login node** (no GPU needed):
+
+```bash
+export COCO_ROOT=/scratch/teaching/hlcv/hlcv_team019/coco
 cd ~/super_resolution
+export PYTHONPATH=$PWD:$PYTHONPATH
 
-# Persist env vars for future sessions
-cat >> ~/.bashrc << 'EOF'
+python scripts/preprocessing/downsample_coco_val2017.py \
+  --coco-root "$COCO_ROOT" \
+  --output-dir /scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2_100 \
+  --scale 2 --blur --blur-kernel 5 --blur-sigma 2 \
+  --max-images 100 --metrics
+```
+
+---
+
+## Option B — Full env (PyTorch + YOLO, 15–30+ min)
+
+Use **`tmux`** so SSH disconnect does not kill the install:
+
+```bash
+tmux new -s conda
+source ~/miniconda3/etc/profile.d/conda.sh
+cd ~/super_resolution
+conda env create -f environment.yml
+# detach: Ctrl+B then D
+# reattach later: tmux attach -t conda
+```
+
+If `pytorch-cuda=12.1` fails, edit `environment.yml` to `pytorch-cuda=11.8` and retry.
+
+Or use the course env (often more reliable on this cluster):
+
+```bash
+cd ~/gpu_instructions
+conda env create -f environment.yml   # creates env name: hlcv
+conda activate hlcv
+```
+
+---
+
+## Paths (add to `~/.bashrc`)
+
+```bash
 export DATA_ROOT=/scratch/teaching/hlcv/hlcv_team019
 export COCO_ROOT=$DATA_ROOT/coco
 export PROJECT_ROOT=$HOME/super_resolution
-EOF
-source ~/.bashrc
-
-# Add project to Python path for this session
 export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 ```
 
----
-
-## Step 5 — Verify COCO exists on the cluster (CLUSTER)
-
-COCO is provided centrally for the course under `/scratch/teaching/hlcv/hlcv_team019` (team-specific path).
+Verify COCO:
 
 ```bash
-ls -lah $COCO_ROOT
 ls $COCO_ROOT/val2017 | wc -l
-ls -lah $COCO_ROOT/annotations | head
+ls $COCO_ROOT/annotations/instances_val2017.json
 ```
 
 ---
 
-## Step 6 — Verify dataset loading (CLUSTER)
+## Running GPU jobs (course Condor flow)
 
-```bash
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate super_resolution
-cd ~/super_resolution
-export PYTHONPATH=$PWD:$PYTHONPATH
+1. Edit `~/gpu_instructions/execute.sh` — set your team paths and conda Python:
+   ```bash
+   PYTHON_SCRIPT_PATH="/home/hlcv_team019/super_resolution"
+   CONDA_PYTHON_BINARY_PATH="/home/hlcv_team019/miniconda3/envs/super_resolution/bin/python"
+   ```
 
-python - << 'EOF'
-from src.data import load_coco_dataset
+2. Edit `~/gpu_instructions/pytorch_docker.sub` — set `arguments = scripts/load_yolo.py` (or your script).
 
-dataset = load_coco_dataset()
-sample = dataset[0]
-print(f"images: {len(dataset)}, sample shape: {tuple(sample.shape)}")
-EOF
-```
-
-Expected output: `images: 5000, sample shape: (3, 64, 64)` (for val2017 with patch_size 64).
-
-Optional pytest (skips if COCO missing):
-
-```bash
-pytest tests/test_datasets.py -v
-```
+3. Submit from login node:
+   ```bash
+   mkdir -p ~/condor_logs
+   cd ~/gpu_instructions
+   condor_submit pytorch_docker.sub
+   condor_q
+   cat ~/condor_logs/*.err
+   ```
 
 ---
 
-## Step 7 — Request a GPU interactive session (CLUSTER)
-
-Use Code Server via https://ood.hpc.uni-saarland.de/ for interactive work,
-or submit a batch job. Minimal GPU smoke test on a compute node:
+## Every new SSH session
 
 ```bash
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate super_resolution
+conda activate super_resolution   # or hlcv
 cd ~/super_resolution
 export PYTHONPATH=$PWD:$PYTHONPATH
-
-python -c "import torch; print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'no GPU')"
-```
-
----
-
-## Quick reference (every new SSH session)
-
-```bash
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate super_resolution
-cd ~/super_resolution
-export PYTHONPATH=$PWD:$PYTHONPATH
-# COCO_ROOT and PROJECT_ROOT are loaded from ~/.bashrc after Step 4
 ```
 
 ---
 
 ## Troubleshooting
 
-| Problem | Fix |
-|--------|-----|
-| `conda: command not found` | `source ~/miniconda3/etc/profile.d/conda.sh` |
-| `ModuleNotFoundError: src` | `export PYTHONPATH=$HOME/super_resolution:$PYTHONPATH` |
-| COCO not found | `echo $COCO_ROOT` should be `$HOME/data/coco`; re-run Step 5 |
-| Conda channel errors | Retry later, or use `pytorch-cuda=11.8` in `environment.yml` |
-| SSL error downloading COCO | Run download on cluster (not locally); cluster network should work |
+| Problem | Cause | Fix |
+|--------|--------|-----|
+| `prefix already exists` | Broken partial env | `conda deactivate` then `rm -rf ~/miniconda3/envs/super_resolution` |
+| `externally-managed-environment` | Using system `pip`, not conda | `conda activate super_resolution` then check `which pip` |
+| `python: command not found` | Env broken / not activated | Recreate env (Option A) |
+| Condor: `python: No such file` | Wrong path in `execute.sh` | Use absolute path to env’s `bin/python` |
+| SSH disconnect during conda | Long install killed | Use `tmux` or minimal env first |
+| `libGL.so.1: cannot open shared object file` | `opencv-python` needs GUI libs on headless nodes | `pip uninstall opencv-python -y && pip install opencv-python-headless` |

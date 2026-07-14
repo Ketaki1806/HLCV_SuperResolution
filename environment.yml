@@ -1,5 +1,5 @@
 # Conda environment for super-resolution benchmark on conduit HPC.
-# Create with: bash scripts/hpc_setup_cluster.sh
+# Create on login node: conda env create -f environment.yml
 # Activate with: conda activate super_resolution
 
 name: super_resolution
