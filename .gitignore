@@ -2,8 +2,11 @@
 data/coco
 data/preprocessed
 data/annotations
+sample/
+sample_lr/
 artifacts/
 results/
+condor_logs/
 # Python
 __pycache__/
 *.pyc
@@ -11,3 +14,4 @@ __pycache__/
 .venv
 # Jupyter
 .ipynb_checkpoints/
+gpu_instructions/
