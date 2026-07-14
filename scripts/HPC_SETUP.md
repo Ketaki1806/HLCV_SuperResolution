@@ -159,7 +159,39 @@ ls $COCO_ROOT/annotations/instances_val2017.json
 
 ---
 
-## Running GPU jobs (course Condor flow)
+## YOLO downstream eval (SR strategies on downsampled val2017)
+
+Requires **full PyTorch env** (`environment.yml` or course `hlcv` env) with `ultralytics`.
+
+Evaluates **baseline**, **ESPCN 2×**, **FSRCNN 2×**, and **AnyUp** (feature-level in YOLO neck) on LR COCO val → YOLO detections → mAP@0.5.
+
+```bash
+export COCO_ROOT=/scratch/teaching/hlcv/hlcv_team019/data/coco
+cd ~/super_resolution
+export PYTHONPATH=$PWD:$PYTHONPATH
+
+# Quick test (100 LR images you already downsampled)
+python scripts/eval_yolo_sr_coco.py \
+  --lr-dir /scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2_100 \
+  --ann-file $COCO_ROOT/annotations/instances_val2017.json \
+  --max-images 100 \
+  --output-dir ~/super_resolution/runs
+
+# Full val2017 (after downsample without --max-images)
+python scripts/eval_yolo_sr_coco.py \
+  --lr-dir /scratch/teaching/hlcv/hlcv_team019/coco_preprocessed/val2017_lr_x2 \
+  --ann-file $COCO_ROOT/annotations/instances_val2017.json \
+  --output-dir ~/super_resolution/runs
+```
+
+Outputs per strategy:
+- `runs/yolov8n_{baseline,espcn2x,fsrcnn2x,anyup}/predictions.json`
+- `runs/yolov8n_{strategy}/size_results.json` (mAP@0.5 all/small/medium/large)
+- `runs/yolov8n_sr_comparison.json` (summary table)
+
+Run on a **GPU node** (login node for small `--max-images 10` smoke test only).
+
+---
 
 1. Edit `~/gpu_instructions/execute.sh` — set your team paths and conda Python:
    ```bash
