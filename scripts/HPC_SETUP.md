@@ -97,6 +97,23 @@ python scripts/eval_downsample_quality.py \
   --output ~/super_resolution/results/downsample_quality.json
 ```
 
+Visualize metrics as charts (needs `matplotlib`):
+
+```bash
+pip install matplotlib
+python scripts/visualize_downsample_quality.py \
+  --input ~/super_resolution/results/downsample_quality.json \
+  --output-dir ~/super_resolution/results/figures/downsample_quality
+```
+
+Charts saved:
+- `downsample_quality_overview.png` — histograms, scatter, mean bars
+- `downsample_quality_psnr_per_image.png` — sorted per-image PSNR
+- `downsample_quality_ssim_per_image.png` — sorted per-image SSIM
+- `downsample_quality_extremes.png` — best/worst 5 by PSNR
+
+---
+
 ---
 
 ## Option B — Full env (PyTorch + YOLO, 15–30+ min)
