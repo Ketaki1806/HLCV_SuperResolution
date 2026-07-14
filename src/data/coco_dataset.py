@@ -51,12 +51,12 @@ class COCODataset(Dataset):
         self.patch_size = patch_size
         self.return_path = return_path
 
-        image_dir = self.root / split
+        image_dir = self._resolve_image_dir(self.root, split)
         if not image_dir.is_dir():
             raise FileNotFoundError(
-                f"COCO split directory not found: {image_dir}. "
+                f"COCO split directory not found for {split!r} under {self.root}. "
                 "Set COCO_ROOT to the existing cluster dataset path "
-                "(e.g. /scratch/teaching/hlcv/hlcv_team019/coco)."
+                "(e.g. /scratch/teaching/hlcv/hlcv_team019/data/coco)."
             )
 
         self.image_paths = sorted(image_dir.glob("*.jpg"))
@@ -65,6 +65,18 @@ class COCODataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.image_paths)
+
+    @staticmethod
+    def _resolve_image_dir(root: Path, split: str) -> Path:
+        candidates = [
+            root / split,
+            root / "images" / split,
+            root / "images" if split == "val2017" else root / "images" / split,
+        ]
+        for candidate in candidates:
+            if candidate.is_dir() and any(candidate.glob("*.jpg")):
+                return candidate
+        return root / split
 
     def __getitem__(self, index: int) -> torch.Tensor | tuple[torch.Tensor, str]:
         path = self.image_paths[index]

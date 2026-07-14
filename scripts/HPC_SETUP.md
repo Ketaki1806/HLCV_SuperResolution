@@ -63,7 +63,7 @@ python -c "import cv2; from pycocotools.coco import COCO; print('ok')"
 Run downsampling on the **login node** (no GPU needed):
 
 ```bash
-export COCO_ROOT=/scratch/teaching/hlcv/hlcv_team019/coco
+export COCO_ROOT=/scratch/teaching/hlcv/hlcv_team019/data/coco
 cd ~/super_resolution
 export PYTHONPATH=$PWD:$PYTHONPATH
 
@@ -105,7 +105,7 @@ conda activate hlcv
 
 ```bash
 export DATA_ROOT=/scratch/teaching/hlcv/hlcv_team019
-export COCO_ROOT=$DATA_ROOT/coco
+export COCO_ROOT=$DATA_ROOT/data/coco
 export PROJECT_ROOT=$HOME/super_resolution
 export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 ```
@@ -113,7 +113,7 @@ export PYTHONPATH=$PROJECT_ROOT:$PYTHONPATH
 Verify COCO:
 
 ```bash
-ls $COCO_ROOT/val2017 | wc -l
+ls $COCO_ROOT/images | head
 ls $COCO_ROOT/annotations/instances_val2017.json
 ```
 

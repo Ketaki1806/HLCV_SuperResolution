@@ -27,6 +27,26 @@ def _upsample(img_bgr: np.ndarray, size_wh: tuple[int, int]) -> np.ndarray:
     return cv2.resize(img_bgr, (w, h), interpolation=cv2.INTER_CUBIC)
 
 
+def _resolve_coco_paths(coco_root: Path) -> tuple[Path, Path]:
+    """Find image dir and val2017 annotations under common COCO layouts."""
+    ann_file = coco_root / "annotations" / "instances_val2017.json"
+    if not ann_file.is_file():
+        raise SystemExit(f"ERROR: COCO annotations not found: {ann_file}")
+
+    img_candidates = [
+        coco_root / "val2017",
+        coco_root / "images" / "val2017",
+        coco_root / "images",
+    ]
+    img_dir = next((p for p in img_candidates if p.is_dir() and any(p.glob("*.jpg"))), None)
+    if img_dir is None:
+        raise SystemExit(
+            f"ERROR: COCO image dir not found. Tried: "
+            + ", ".join(str(p) for p in img_candidates)
+        )
+    return img_dir, ann_file
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate downsampled COCO val2017 images (optionally compute PSNR/SSIM vs bicubic-upsampled)."
@@ -35,7 +55,7 @@ def main() -> None:
         "--coco-root",
         type=Path,
         default=Path(os.environ.get("COCO_ROOT", "")) if os.environ.get("COCO_ROOT") else None,
-        help="COCO root containing val2017/ and annotations/ (default: $COCO_ROOT)",
+        help="COCO root containing images + annotations/ (default: $COCO_ROOT)",
     )
     parser.add_argument(
         "--output-dir",
@@ -64,13 +84,9 @@ def main() -> None:
     if args.coco_root is None:
         raise SystemExit("ERROR: --coco-root not provided and $COCO_ROOT is not set.")
 
-    img_dir = args.coco_root / "val2017"
-    ann_file = args.coco_root / "annotations" / "instances_val2017.json"
-
-    if not img_dir.is_dir():
-        raise SystemExit(f"ERROR: val2017 dir not found: {img_dir}")
-    if not ann_file.is_file():
-        raise SystemExit(f"ERROR: COCO annotations not found: {ann_file}")
+    img_dir, ann_file = _resolve_coco_paths(args.coco_root)
+    print(f"Images:      {img_dir}")
+    print(f"Annotations: {ann_file}")
 
     if args.scale < 2:
         raise SystemExit("ERROR: --scale must be >= 2")
@@ -120,7 +136,8 @@ def main() -> None:
     summary = {
         "config": {
             "coco_root": str(args.coco_root),
-            "split": "val2017",
+            "image_dir": str(img_dir),
+            "annotation_file": str(ann_file),
             "output_dir": str(args.output_dir),
             "scale": int(args.scale),
             "blur": bool(args.blur),
