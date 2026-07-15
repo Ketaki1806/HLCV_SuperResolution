@@ -1,0 +1,58 @@
+{
+  "yolov8n_baseline": {
+    "detector": "yolov8n",
+    "strategy": "baseline",
+    "lr_dir": "data\\preprocessed\\val2017_lr_x2",
+    "annotation_file": "data\\coco\\annotations\\instances_val2017.json",
+    "num_images": 5000,
+    "num_detections": 658804,
+    "metrics": {
+      "mAP_50_all": 0.00017586081507483677,
+      "mAP_50_small": 0.0003154939769274297,
+      "mAP_50_medium": 0.0011457945772337926,
+      "mAP_50_large": 0.00014709444910480495
+    }
+  },
+  "yolov8n_espcn2x": {
+    "detector": "yolov8n",
+    "strategy": "espcn2x",
+    "lr_dir": "data\\preprocessed\\val2017_lr_x2",
+    "annotation_file": "data\\coco\\annotations\\instances_val2017.json",
+    "num_images": 5000,
+    "num_detections": 655883,
+    "metrics": {
+      "mAP_50_all": 0.00017386605411038984,
+      "mAP_50_small": 0.0002714124845263436,
+      "mAP_50_medium": 0.000980066125431215,
+      "mAP_50_large": 0.0001449098769649658
+    }
+  },
+  "yolov8n_fsrcnn2x": {
+    "detector": "yolov8n",
+    "strategy": "fsrcnn2x",
+    "lr_dir": "data\\preprocessed\\val2017_lr_x2",
+    "annotation_file": "data\\coco\\annotations\\instances_val2017.json",
+    "num_images": 5000,
+    "num_detections": 654593,
+    "metrics": {
+      "mAP_50_all": 0.0001761167710014776,
+      "mAP_50_small": 0.00026879218031506985,
+      "mAP_50_medium": 0.0010727842059175875,
+      "mAP_50_large": 0.00012754027315425455
+    }
+  },
+  "yolov8n_anyup": {
+    "detector": "yolov8n",
+    "strategy": "anyup",
+    "lr_dir": "data\\preprocessed\\val2017_lr_x2",
+    "annotation_file": "data\\coco\\annotations\\instances_val2017.json",
+    "num_images": 5000,
+    "num_detections": 519919,
+    "metrics": {
+      "mAP_50_all": 0.00017495001840164224,
+      "mAP_50_small": 0.00022644594914790334,
+      "mAP_50_medium": 0.0012991576183131216,
+      "mAP_50_large": 0.00012751121421751384
+    }
+  }
+}

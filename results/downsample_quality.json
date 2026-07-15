@@ -1,0 +1,12 @@
+{
+  "config": {"scale": 2, "blur": true},
+  "count": 5,
+  "mean": {"psnr_db": 28.1, "ssim": 0.85},
+  "per_image": [
+    {"file_name": "a.jpg", "psnr_db": 25.0, "ssim": 0.80},
+    {"file_name": "b.jpg", "psnr_db": 27.5, "ssim": 0.84},
+    {"file_name": "c.jpg", "psnr_db": 28.2, "ssim": 0.86},
+    {"file_name": "d.jpg", "psnr_db": 30.1, "ssim": 0.88},
+    {"file_name": "e.jpg", "psnr_db": 29.8, "ssim": 0.87}
+  ]
+}

@@ -5,13 +5,26 @@ data/annotations
 sample/
 sample_lr/
 artifacts/
-results/
 condor_logs/
+# Huge YOLO prediction dumps (keep locally; break GitHub HTTP pushes)
+runs/**/predictions.json
+**/predictions.json
 # Python
 __pycache__/
 *.pyc
 .env
 .venv
-# Jupyter
-.ipynb_checkpoints/
 gpu_instructions/
+results/figures/sr_demo/
+datasets/coco/labels/
+datasets/coco2017labels-segments.zip
+datasets/coco/LICENSE
+datasets/coco/README.txt
+datasets/coco/test-dev2017.txt
+datasets/coco/train2017.txt
+datasets/coco/val2017.txt
+datasets/coco/annotations/instances_val2017.json
+datasets/coco/images/test2017.zip
+datasets/coco/images/train2017.zip
+datasets/coco/images/val2017.zip
+datasets/coco/

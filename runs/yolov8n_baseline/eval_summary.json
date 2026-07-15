@@ -1,0 +1,14 @@
+{
+  "detector": "yolov8n",
+  "strategy": "baseline",
+  "lr_dir": "data\\preprocessed\\val2017_lr_x2",
+  "annotation_file": "data\\coco\\annotations\\instances_val2017.json",
+  "num_images": 5000,
+  "num_detections": 658804,
+  "metrics": {
+    "mAP_50_all": 0.00017586081507483677,
+    "mAP_50_small": 0.0003154939769274297,
+    "mAP_50_medium": 0.0011457945772337926,
+    "mAP_50_large": 0.00014709444910480495
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "report_scope": {
+    "dataset": "COCO val2017",
+    "num_images": 5000,
+    "coverage": "full validation set (not a subset)",
+    "detector": "yolov8n",
+    "weights": "yolov8n.pt",
+    "lr_dir": "data/preprocessed/val2017_lr_x2",
+    "annotation_file": "data/coco/annotations/instances_val2017.json",
+    "conf_threshold": 0.001,
+    "iou_metric": "mAP@0.5 (COCO bbox)",
+    "device": "cpu",
+    "date": "2026-07-15"
+  },
+  "metrics_full_val2017": {
+    "baseline": {
+      "num_images": 5000,
+      "num_detections": 658804,
+      "mAP_50_all": 0.35146219335736256,
+      "mAP_50_small": 0.10566915263322244,
+      "mAP_50_medium": 0.33647358806161587,
+      "mAP_50_large": 0.5020956831558838
+    },
+    "espcn2x": {
+      "num_images": 5000,
+      "num_detections": 655883,
+      "mAP_50_all": 0.3621262681939855,
+      "mAP_50_small": 0.11268407874874162,
+      "mAP_50_medium": 0.344090158045896,
+      "mAP_50_large": 0.5115108209010061
+    },
+    "fsrcnn2x": {
+      "num_images": 5000,
+      "num_detections": 654593,
+      "mAP_50_all": 0.36863764362999646,
+      "mAP_50_small": 0.11725863614200611,
+      "mAP_50_medium": 0.35295483867663324,
+      "mAP_50_large": 0.5152430741556824
+    },
+    "anyup": {
+      "num_images": 5000,
+      "num_detections": 519919,
+      "mAP_50_all": 0.3301387943080891,
+      "mAP_50_small": 0.09383567034892107,
+      "mAP_50_medium": 0.3256110929477427,
+      "mAP_50_large": 0.500351364025911
+    }
+  },
+  "report_table_percent": {
+    "baseline": {
+      "mAP_50_all": 35.15,
+      "mAP_50_small": 10.57,
+      "mAP_50_medium": 33.65,
+      "mAP_50_large": 50.21,
+      "delta_all_pp_vs_baseline": 0.0
+    },
+    "espcn2x": {
+      "mAP_50_all": 36.21,
+      "mAP_50_small": 11.27,
+      "mAP_50_medium": 34.41,
+      "mAP_50_large": 51.15,
+      "delta_all_pp_vs_baseline": 1.06
+    },
+    "fsrcnn2x": {
+      "mAP_50_all": 36.86,
+      "mAP_50_small": 11.73,
+      "mAP_50_medium": 35.30,
+      "mAP_50_large": 51.52,
+      "delta_all_pp_vs_baseline": 1.72
+    },
+    "anyup": {
+      "mAP_50_all": 33.01,
+      "mAP_50_small": 9.38,
+      "mAP_50_medium": 32.56,
+      "mAP_50_large": 50.04,
+      "delta_all_pp_vs_baseline": -2.14
+    }
+  },
+  "detection_counts": {
+    "baseline": 658804,
+    "espcn2x": 655883,
+    "fsrcnn2x": 654593,
+    "anyup": 519919
+  },
+  "downsample_quality_full_val2017": {
+    "num_images": 5000,
+    "mean_psnr_db": 25.545630576604154,
+    "mean_ssim": 0.7294183710197607,
+    "source": "data/preprocessed/val2017_lr_x2/downsample_quality.json"
+  }
+}
