@@ -26,7 +26,7 @@ class DetrWithAnyUpSwitch(nn.Module):
         mask = backbone_outputs.last_hidden_state_mask          
         
         proj_features = self.raw_detr.model.input_projection(feature_map) # [B, 2048, H, W] -> [B, 256, H, W]
-        upsampled_features = self.anyup(proj_features)                    # [B, 256, 2H, 2W]
+        upsampled_features = self.anyup(pixel_values, proj_features)                    # [B, 256, 2H, 2W]
         
         if mask is not None:
             new_h, new_w = upsampled_features.shape[-2:]
